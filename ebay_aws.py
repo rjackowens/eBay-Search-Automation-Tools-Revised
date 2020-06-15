@@ -6,7 +6,8 @@ import time
 import pandas as pd
 
 from string_templates import stop_words
-from dynamodb import add_single_item, get_item_by_attr
+from dynamodb import create_table, add_single_item, get_item_by_attr
+from timestamp import generate_timestamp
 from sns_test import send_text_message
 
 from selenium import webdriver
@@ -34,6 +35,8 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
         If result(s) do not already exist in relevant DynamoDB table, sends text message via SNS.
 
     """
+
+    time_stamp = generate_timestamp()
 
     options = Options()
     options.headless = headless
@@ -70,10 +73,10 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
     # Parse Item Titles
     listings = soup.find_all("li", class_="s-item") # <class 'bs4.element.ResultSet'>
 
-    # Create file for seen items if does not exist
-    seen_file = f'./results/seen/{search_term}.txt'
-    if not os.path.exists(seen_file):
-        open(seen_file, 'a').close()
+    # Create DynamoDB table if does not exist
+    table_name = search_term.replace(" ", "")
+    create_table(table_name=table_name)
+    time.sleep(5)
 
     item_titles = []
     item_prices = []
@@ -95,11 +98,12 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
                 
                 # If item is new, adds to DynamoDB and appends to item_titles
                 # If item has been seen, skips over it
-                if (get_item_by_attr(_attr=_item)) == []: # if not found in DynamoDB
-                    print(f"{_item} is new, adding to DynamoDB")
+                if (get_item_by_attr(_attr=_item, table=table_name)) == []: # if not found in DynamoDB
+                    print(f"{_item} for {price.text} is new, adding to DynamoDB")
 
-                    add_single_item(title=str(_item), price=str(price.text)) # adds item to DynamoDB
-                    item_titles.append(_item)
+                    add_single_item(title=str(_item), price=str(price.text), time_stamp=time_stamp, table=table_name) # adds item to DynamoDB
+                    item_titles.append(_item) # Necessary to report num of new items
+                    # send_text_message(f"{_item} selling for {price.text}")
 
         # if(_item != " "):
         #     for details in listing.find_all('div', attrs={'class':"s-item__details"}):
@@ -110,27 +114,10 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
     print(f"\nFound {len(item_titles)} new items for {search_term} between ${min_price} and ${max_price}")
 
     # Send text message with new result(s)
-    for title, price in zip(item_titles, item_prices):
-        send_text_message(f"{title} selling for {price}")
-
-    # Create Pandas Dataframe
-    # search_results_df = pd.DataFrame.from_dict({"Name":item_titles, "Price": item_prices, "Date": item_dates}, orient="index")
-    # pd.set_option('max_colwidth', 75)
-    # print(search_results_df)
-
-    # Creates .csv with name of search term and deletes if already exists
-    # if export_csv:
-    #     file_name = f'./results/excel/{search_term}.csv'
-
-    #     try:
-    #         os.remove(file_name)
-    #     except OSError:
-    #         pass
-
-    #     print(f"\nExporting {file_name}")
-    #     search_results_df.to_csv(file_name, encoding='utf-8')
+    # for title, price in zip(item_titles, item_prices):
+    #     send_text_message(f"{title} selling for {price}")
 
     b.quit()
 
-run_search("omega")
+# run_search("zenith")
 # run_search("Breguet", min_price=2000, max_price=7650)

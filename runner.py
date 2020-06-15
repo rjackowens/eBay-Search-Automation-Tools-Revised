@@ -1,4 +1,4 @@
-from ebay import run_search
+from ebay_aws import run_search
 from string_templates import search_terms
 
 for item in search_terms:

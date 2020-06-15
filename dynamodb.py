@@ -5,8 +5,46 @@ from boto3.dynamodb.conditions import Key, Attr
 dynamo_db = boto3.resource("dynamodb")
 # dynamo_table = dynamo_db.Table("ebay_items")
 
-def add_single_item(table="ebay_items", title=None, price="", date=""):
-    """ Adds entry to DynamoDB table"""
+def create_table(table_name=None):
+    """Creates new DynamoDB table
+
+    Args:
+        table_name: Name of new DynamoDB table. Cannot contain spaces.
+
+    """
+
+    dynamo_db = boto3.resource("dynamodb")
+
+    try:
+        table = dynamo_db.create_table(
+            TableName=table_name.replace(" ", ""),
+            KeySchema=[
+                {
+                    'AttributeName': 'title',
+                    'KeyType': 'HASH'  # Partition key
+                }
+            ],
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'title',
+                    'AttributeType': 'S'
+                },
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 5,
+                'WriteCapacityUnits': 5
+            }
+        )
+
+    except ClientError as e:
+        if e.response['Error']['Code'] == "ResourceInUseException":
+            print(f"Table {table_name} already exists")
+
+    else:
+        return table
+
+def add_single_item(table="ebay_items", title=None, price="", date="", time_stamp=""):
+    """Adds entry to DynamoDB table"""
 
     dynamo_table = dynamo_db.Table(table)
 
@@ -14,7 +52,8 @@ def add_single_item(table="ebay_items", title=None, price="", date=""):
 
         Item={
             "title": title,
-            "price": str(price)
+            "price": str(price),
+            "date_added": time_stamp
             # "date": date
         }
 
@@ -37,7 +76,7 @@ def get_single_item(title, table="ebay_items"):
 # result = get_single_item("Cartier Tank").get("title")
 # print(result)
 
-# add_single_item(title="Omega Speedmaster", price="$3,405.00")
+# add_single_item(title="Omega Speedmaster", price="$3,405.00", table="NewTable")
 
 
 def get_item_by_attr(_attr="Omega Speedmaster", table="ebay_items"):
