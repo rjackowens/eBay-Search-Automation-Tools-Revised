@@ -1,0 +1,71 @@
+import boto3
+from botocore.exceptions import ClientError
+from boto3.dynamodb.conditions import Key, Attr
+
+dynamo_db = boto3.resource("dynamodb")
+# dynamo_table = dynamo_db.Table("ebay_items")
+
+def add_single_item(table="ebay_items", title=None, price="", date=""):
+    """ Adds entry to DynamoDB table"""
+
+    dynamo_table = dynamo_db.Table(table)
+
+    dynamo_table.put_item(
+
+        Item={
+            "title": title,
+            "price": str(price)
+            # "date": date
+        }
+
+    )
+
+# add_single_item("Cartier Tank", 2000)
+
+def get_single_item(title, table="ebay_items"):
+    """Retrieves entry from DynamoDB table"""
+
+    dynamo_table = dynamo_db.Table(table)
+
+    try:
+        response = dynamo_table.get_item(Key={'title': title})
+    except ClientError as e:
+        print(e.response['Error']['Message'])
+    else:
+        return response['Item']
+
+# result = get_single_item("Cartier Tank").get("title")
+# print(result)
+
+# add_single_item(title="Omega Speedmaster", price="$3,405.00")
+
+
+def get_item_by_attr(_attr="Omega Speedmaster", table="ebay_items"):
+    """Retrieves entry from DynamoDB table matching attribute filter"""
+
+    dynamo_table = dynamo_db.Table(table)
+
+    try:
+        response = dynamo_table.query(KeyConditionExpression=Key('title').eq(_attr))
+    except ClientError as e:
+        print(e.response['Error']['Message'])
+    else:
+        return response['Items']
+
+# print(get_item_by_attr(_attr="Cartier Tank"))
+
+# if (get_item_by_attr(_attr="Estate 3.00ct Diamond 14k Yellow Gold Omega Style Necklace")) == []:
+#     print("not found!")
+
+def get_all_items(table="ebay_items"):
+    """Retrieves all entries from DynamoDB using scan"""
+
+    dynamo_table = dynamo_db.Table(table)
+
+    response = dynamo_table.scan(FilterExpression="attribute_exists(title) AND attribute_exists(price)")
+    return response["Items"]
+
+# all_items = get_all_items()
+
+# for x in all_items:
+#     print(x)
