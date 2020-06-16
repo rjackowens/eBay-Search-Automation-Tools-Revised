@@ -3,4 +3,4 @@ __pycache__
 .vscode
 results
 geckodriver.log
-config.py
+venv/Lib
