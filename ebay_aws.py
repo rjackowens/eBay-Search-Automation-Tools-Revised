@@ -9,12 +9,11 @@ from selenium_runner import run_selenium
 from string_templates import stop_words
 from dynamodb import create_table, add_single_item, get_item_by_attr
 from timestamp import generate_timestamp
-from sns_test import send_text_message
+from sns import send_text_message
 
 from bs4 import BeautifulSoup
-# from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-# from selenium.webdriver.firefox.options import Options
+
 
 def run_search (search_term: str, search_filter=stop_words.get("general"),
     min_price=600, max_price=7200, export_csv=False, headless=False):
@@ -119,4 +118,4 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
     b.quit()
 
 # run_search("zenith")
-run_search("Breguet", min_price=4000, max_price=7650)
+# run_search("Breguet", min_price=4000, max_price=7650)
