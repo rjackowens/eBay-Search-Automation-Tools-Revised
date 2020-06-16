@@ -5,18 +5,19 @@ import os
 import time
 import pandas as pd
 
+from selenium_runner import run_selenium
 from string_templates import stop_words
 from dynamodb import create_table, add_single_item, get_item_by_attr
 from timestamp import generate_timestamp
 from sns_test import send_text_message
 
-from selenium import webdriver
 from bs4 import BeautifulSoup
+# from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.firefox.options import Options
+# from selenium.webdriver.firefox.options import Options
 
 def run_search (search_term: str, search_filter=stop_words.get("general"),
-    min_price=600, max_price=7200, export_csv=False, headless=True):
+    min_price=600, max_price=7200, export_csv=False, headless=False):
     """Run eBay search query with search filters and price constraints.
 
     Args:
@@ -38,9 +39,7 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
 
     time_stamp = generate_timestamp()
 
-    options = Options()
-    options.headless = headless
-    b = webdriver.Firefox(options=options, executable_path="/Users/jackowens/Downloads/geckodriver")
+    b = run_selenium(headless_mode=headless)
 
     b.get("https://www.ebay.com/")
     b.implicitly_wait(2)
@@ -73,10 +72,10 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
     # Parse Item Titles
     listings = soup.find_all("li", class_="s-item") # <class 'bs4.element.ResultSet'>
 
-    # Create DynamoDB table if does not exist
-    table_name = search_term.replace(" ", "")
-    create_table(table_name=table_name)
-    time.sleep(5)
+    # # Create DynamoDB table if does not exist
+    # table_name = search_term.replace(" ", "")
+    # create_table(table_name=table_name)
+    # time.sleep(5)
 
     item_titles = []
     item_prices = []
@@ -98,10 +97,10 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
                 
                 # If item is new, adds to DynamoDB and appends to item_titles
                 # If item has been seen, skips over it
-                if (get_item_by_attr(_attr=_item, table=table_name)) == []: # if not found in DynamoDB
+                if (get_item_by_attr(_attr=_item)) == []: # if not found in DynamoDB
                     print(f"{_item} for {price.text} is new, adding to DynamoDB")
 
-                    add_single_item(title=str(_item), price=str(price.text), time_stamp=time_stamp, table=table_name) # adds item to DynamoDB
+                    add_single_item(title=str(_item), price=str(price.text), time_stamp=time_stamp, brand=search_term) # adds item to DynamoDB
                     item_titles.append(_item) # Necessary to report num of new items
                     # send_text_message(f"{_item} selling for {price.text}")
 
@@ -120,4 +119,4 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
     b.quit()
 
 # run_search("zenith")
-# run_search("Breguet", min_price=2000, max_price=7650)
+run_search("Breguet", min_price=4000, max_price=7650)

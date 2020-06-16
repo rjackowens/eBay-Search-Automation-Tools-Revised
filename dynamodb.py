@@ -43,7 +43,7 @@ def create_table(table_name=None):
     else:
         return table
 
-def add_single_item(table="ebay_items", title=None, price="", date="", time_stamp=""):
+def add_single_item(table="ebay_watches", title=None, price="",date="", time_stamp="", brand="", reference=""):
     """Adds entry to DynamoDB table"""
 
     dynamo_table = dynamo_db.Table(table)
@@ -53,7 +53,9 @@ def add_single_item(table="ebay_items", title=None, price="", date="", time_stam
         Item={
             "title": title,
             "price": str(price),
-            "date_added": time_stamp
+            "date_added": time_stamp,
+            "brand": brand,
+            "reference": reference
             # "date": date
         }
 
@@ -61,7 +63,7 @@ def add_single_item(table="ebay_items", title=None, price="", date="", time_stam
 
 # add_single_item("Cartier Tank", 2000)
 
-def get_single_item(title, table="ebay_items"):
+def get_single_item(title, table="ebay_watches"):
     """Retrieves entry from DynamoDB table"""
 
     dynamo_table = dynamo_db.Table(table)
@@ -79,7 +81,7 @@ def get_single_item(title, table="ebay_items"):
 # add_single_item(title="Omega Speedmaster", price="$3,405.00", table="NewTable")
 
 
-def get_item_by_attr(_attr="Omega Speedmaster", table="ebay_items"):
+def get_item_by_attr(_attr="Omega Speedmaster", table="ebay_watches"):
     """Retrieves entry from DynamoDB table matching attribute filter"""
 
     dynamo_table = dynamo_db.Table(table)
@@ -96,7 +98,7 @@ def get_item_by_attr(_attr="Omega Speedmaster", table="ebay_items"):
 # if (get_item_by_attr(_attr="Estate 3.00ct Diamond 14k Yellow Gold Omega Style Necklace")) == []:
 #     print("not found!")
 
-def get_all_items(table="ebay_items"):
+def get_all_items(table="ebay_watches"):
     """Retrieves all entries from DynamoDB using scan"""
 
     dynamo_table = dynamo_db.Table(table)

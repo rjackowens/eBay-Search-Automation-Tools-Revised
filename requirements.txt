@@ -1,0 +1,16 @@
+beautifulsoup4==4.9.1
+boto3==1.14.3
+botocore==1.17.3
+bs4==0.0.1
+docutils==0.15.2
+jmespath==0.10.0
+lxml==4.5.1
+numpy==1.18.5
+pandas==1.0.4
+python-dateutil==2.8.1
+pytz==2020.1
+s3transfer==0.3.3
+selenium==3.141.0
+six==1.15.0
+soupsieve==2.0.1
+urllib3==1.25.9
