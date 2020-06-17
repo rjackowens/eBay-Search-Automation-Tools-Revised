@@ -21,7 +21,7 @@ def import_custom_stop_words():
         for stopword in custom_stop_words:
             lexeme = nlp.vocab[stopword]
             lexeme.is_stop = True
-    except IOError as e:
+    except OSError as e:
         raise e
 
 
