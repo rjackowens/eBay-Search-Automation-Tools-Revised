@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import os
 import time
-import pandas as pd
+# import pandas as pd
 
 from selenium_runner import run_selenium
 from string_templates import stop_words
-from dynamodb import create_table, add_single_item, get_item_by_attr
+from dynamodb import add_single_item, get_item_by_attr
 from timestamp import generate_timestamp
 from sns import send_text_message
 
@@ -71,11 +70,6 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
     # Parse Item Titles
     listings = soup.find_all("li", class_="s-item") # <class 'bs4.element.ResultSet'>
 
-    # # Create DynamoDB table if does not exist
-    # table_name = search_term.replace(" ", "")
-    # create_table(table_name=table_name)
-    # time.sleep(5)
-
     item_titles = []
     item_prices = []
     item_dates = []
@@ -85,15 +79,14 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
     for listing in listings:
         _item = " " # Removes "New Listing" prefix
 
-        # if(_item != " "):
         price = listing.find('span', attrs={'class':"s-item__price"}) or None
         if price is not None:
             item_prices.append(price.text)
 
         for name in listing.find_all('h3', attrs={'class':"s-item__title"}):
             if(str(name.find(text=True, recursive=False))!="None"):
-                _item=str(name.find(text=True, recursive=False))
-                
+                _item = str(name.find(text=True, recursive=False))
+
                 # If item is new, adds to DynamoDB and appends to item_titles
                 # If item has been seen, skips over it
                 if (get_item_by_attr(_attr=_item)) == []: # if not found in DynamoDB

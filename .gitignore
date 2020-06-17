@@ -4,3 +4,4 @@ __pycache__
 results
 geckodriver.log
 venv/Lib
+venv/Scripts
