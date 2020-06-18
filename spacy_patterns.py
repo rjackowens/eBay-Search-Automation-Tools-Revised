@@ -56,3 +56,15 @@ all_numbers = [
         {"LIKE_NUM": True}
     ]
 ]
+
+all_movements = [
+    [
+        {"LOWER": "automatic"}
+    ],
+    [
+        {"LOWER": "manual"}
+    ],
+    [
+        {"LOWER": "quartz"}
+    ]
+]

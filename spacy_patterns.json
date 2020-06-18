@@ -1,0 +1,51 @@
+{
+    "patterns": {
+        "metals": [
+            {
+                "LOWER": "gold"
+            },
+            {
+                "LOWER": "steel"
+            },
+            {
+                "LOWER": "titanium"
+            }
+        ],
+        "conditions": [
+            {
+                "LOWER": "new"
+            },
+            {
+                "LOWER": "used"
+            },
+            {
+                "LOWER": "unworn"
+            }
+        ],
+        "colors": [
+            {
+                "LOWER": "black"
+            },
+            {
+                "LOWER": "white"
+            },
+            { 
+                "LOWER": "silver"
+            },
+            {
+                "LOWER": "gray"
+            },
+            {
+                "LOWER": "grey"
+            },
+            {
+                "LOWER": "yellow"
+            }
+        ],
+        "is_price": [
+            {
+                "LIKE_NUM": "True"
+            }
+        ]
+    }
+}

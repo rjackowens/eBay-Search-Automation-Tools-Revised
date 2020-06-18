@@ -1,13 +1,21 @@
 import spacy
 from spacy.matcher import Matcher
-from spacy_patterns import all_metals, all_conditions, all_prices, all_numbers
+from import_spacy_patterns import get_pattern
 
 
-def run_matcher(title: str, match_pattern: list):
-    """Run Spacy matcher against a single list of patterns"""
+def run_matcher(title: str, match_pattern: str):
+    """Run Spacy matcher against a single array of patterns
+
+    args:
+        title: Title string to run matcher against.
+        match_pattern: Name of pattern to run. Stored in json_file_name as json arrays.
+
+    """
+
     nlp = spacy.load("en_core_web_sm")
 
-    for pattern in match_pattern:
+    for pattern in get_pattern(match_pattern):
+
         matcher = Matcher(nlp.vocab)
         matcher.add("MATCH_ID", None, pattern)  # MATCH_ID can eventually be name of pattern itself
 
@@ -35,6 +43,6 @@ def run_matcher(title: str, match_pattern: list):
                 print(f"Found keyword match: {span.text}")
 
 
-# run_matcher("Jaeger LeCoultre Master Ultra Thin Steel Gold Test NEW", all_conditions)
-# run_matcher("Used Jaeger LeCoultre Master Ultra Thin Steel Gold Test NEW 2", all_prices)
-run_matcher("Jaeger LeCoultre Master Ultra Thin Steel Gold Test NEW", all_numbers)
+# run_matcher("Jaeger LeCoultre Master Ultra Thin Steel Gold Test NEW", "metals")
+# run_matcher("Used Jaeger LeCoultre Master Ultra Thin Steel Gold Test NEW 2", "colors")
+run_matcher("Jaeger LeCoultre Master Ultra Thin Steel Gold Test NEW", "conditions")
