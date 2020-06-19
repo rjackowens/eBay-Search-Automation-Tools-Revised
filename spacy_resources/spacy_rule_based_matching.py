@@ -4,13 +4,13 @@ import json
 
 from spacy.matcher import Matcher
 from colorama import Fore, Style
+# from aws_resources.dynamodb import add_single_item
 
 
 def get_all_spacy_patterns(json_file_name="spacy_patterns.json"):
     """Imports all Spacy patterns from json file
 
     Args:
-        pattern_name: Name of pattern to import from file.
         json_file_name: Location of json file containing patterns
 
     """
@@ -91,11 +91,15 @@ def run_matcher_multiple(title: str):
 
     nlp = spacy.load("en_core_web_sm")
 
+    all_keyword_matches = {}
+    num_keyword_matches = []
+    count = 0
+
     for pattern in get_all_spacy_patterns():
         for element in pattern:
 
             matcher = Matcher(nlp.vocab)
-            matcher.add("MATCH_ID", None, element)  # MATCH_ID can eventually be name of pattern itself
+            matcher.add("is_number", None, element)  # MATCH_ID can eventually be name of pattern itself
 
             doc = nlp(title)
             matches = matcher(doc)
@@ -116,9 +120,16 @@ def run_matcher_multiple(title: str):
 
             else:
                 for match_id, start, end in matches:
-                    # string_id = nlp.vocab.strings[match_id]  # Get string representation of match, i.e. MATCH_ID
-                    span = doc[start:end]  # The matched span
-                    print(f"{Fore.YELLOW}Found keyword match: {span.text}")
+                    span = doc[start:end]  # The matched token
+                    print(f"{Fore.YELLOW}Found keyword match: {span.text}{Style.RESET_ALL}")
+
+                    match_id_name = nlp.vocab.strings[match_id]  # Get string representation of match, i.e. MATCH_ID
+                    all_keyword_matches[match_id_name] = span.text  # In the future match_id_name will be name of match filter
+                    count += 1  # Note: Unable to use enumerate() with empty iterators
+
+    print(f"\nTitle was: {title}")
+    print(f"Found {count} total matches.")
+    print(f"Matched rule(s): {list(all_keyword_matches.keys())[0]}")  # BROKEN: Need to Update match_id_name to == match filter
 
 
-# run_matcher_multiple("Good Condition Jaeger LeCoultre Master Spring Drive Ultra Thin 2015 Steel Gold Test NEW")
+run_matcher_multiple("Good Condition Jaeger LeCoultre Master 2015 Spring Drive Ultra Thin Steel Gold Test NEW")

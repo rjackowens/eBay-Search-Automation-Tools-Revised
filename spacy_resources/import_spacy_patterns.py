@@ -28,7 +28,6 @@ def get_pattern_all(json_file_name="spacy_patterns.json"):
     """Imports all Spacy patterns from json file
 
     Args:
-        pattern_name: Name of pattern to import from file.
         json_file_name: Location of json file containing patterns
 
     """
@@ -39,10 +38,24 @@ def get_pattern_all(json_file_name="spacy_patterns.json"):
     except OSError as e:
         raise e
 
+    pattern_filters = []
     patterns = []
     for item in data["patterns"]:
         pattern = data["patterns"].get(item)
+        pattern_filters.append(item)
         patterns.append(pattern)
+
+    patterns_with_filter = {}
+    all_patterns_2 = []
+    for _filter in pattern_filters:
+        # print(_filter)
+        for pattern in patterns:
+            nested_list = list(map(lambda el:[el], pattern))
+            all_patterns_2.append(nested_list)
+            # print(pattern)
+        
+            patterns_with_filter[_filter] = [pattern for pattern in patterns]
+
 
     # Maps lists into list of lists
     all_patterns = []
@@ -50,8 +63,11 @@ def get_pattern_all(json_file_name="spacy_patterns.json"):
         nested_list = list(map(lambda el:[el], pattern))
         all_patterns.append(nested_list)
 
-    return all_patterns
+    return patterns_with_filter  #, all_patterns
 
+
+print(get_pattern_all())
+# get_pattern_all()
 
 # NEED TO GET: [[{'LOWE5R': 'gold'}], [{'LOWER': 'steel'}], [{'LOWER': 'titanium'}]]
 
