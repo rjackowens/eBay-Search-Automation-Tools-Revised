@@ -1,6 +1,7 @@
 import boto3
 from botocore.exceptions import ClientError
 
+
 def create_table(table_name=None):
     """Creates new DynamoDB table
 
@@ -39,4 +40,4 @@ def create_table(table_name=None):
     else:
         return table
 
-print(create_table(table_name="Jaeger LeCoultre"))
+# print(create_table(table_name="Jaeger LeCoultre"))

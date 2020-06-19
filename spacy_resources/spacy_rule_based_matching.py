@@ -1,7 +1,38 @@
 import spacy
+import os
+import json
+
 from spacy.matcher import Matcher
 from colorama import Fore, Style
-from import_spacy_patterns import get_pattern_single, get_pattern_all
+
+
+def get_all_spacy_patterns(json_file_name="spacy_patterns.json"):
+    """Imports all Spacy patterns from json file
+
+    Args:
+        pattern_name: Name of pattern to import from file.
+        json_file_name: Location of json file containing patterns
+
+    """
+
+    try:
+        with open(os.path.join(os.path.dirname(__file__), json_file_name), "r") as json_file:
+            data = json.load(json_file)
+    except OSError as e:
+        raise e
+
+    patterns = []
+    for item in data["patterns"]:
+        pattern = data["patterns"].get(item)
+        patterns.append(pattern)
+
+    # Maps lists into list of lists
+    all_patterns = []
+    for pattern in patterns:
+        nested_list = list(map(lambda el:[el], pattern))
+        all_patterns.append(nested_list)
+
+    return all_patterns
 
 
 def run_matcher_single(title: str, match_pattern: str):
@@ -48,6 +79,7 @@ def run_matcher_single(title: str, match_pattern: str):
 # run_matcher_single("Used Jaeger LeCoultre Master Ultra Thin Steel Gold Test NEW 2", "colors")
 # run_matcher_single("Jaeger LeCoultre Master Ultra Thin Steel Gold Test NEW", "conditions")
 
+
 def run_matcher_multiple(title: str):
     """Run Spacy matcher against multiple arrays of patterns
 
@@ -59,7 +91,7 @@ def run_matcher_multiple(title: str):
 
     nlp = spacy.load("en_core_web_sm")
 
-    for pattern in get_pattern_all():
+    for pattern in get_all_spacy_patterns():
         for element in pattern:
 
             matcher = Matcher(nlp.vocab)
@@ -89,4 +121,4 @@ def run_matcher_multiple(title: str):
                     print(f"{Fore.YELLOW}Found keyword match: {span.text}")
 
 
-run_matcher_multiple("Good Condition Jaeger LeCoultre Master Spring Drive Ultra Thin 2015 Steel Gold Test NEW")
+# run_matcher_multiple("Good Condition Jaeger LeCoultre Master Spring Drive Ultra Thin 2015 Steel Gold Test NEW")

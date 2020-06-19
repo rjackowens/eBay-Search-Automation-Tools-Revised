@@ -5,6 +5,7 @@ from boto3.dynamodb.conditions import Key, Attr
 dynamo_db = boto3.resource("dynamodb")
 # dynamo_table = dynamo_db.Table("ebay_items")
 
+
 def create_table(table_name=None):
     """Creates new DynamoDB table
 
@@ -43,7 +44,8 @@ def create_table(table_name=None):
     else:
         return table
 
-def add_single_item(table="ebay_watches", title=None, price="",date="", time_stamp="", brand="", reference=""):
+
+def add_single_item(table="ebay_watches", title=None, price="",date="", time_stamp="", brand="", reference="", metal=""):
     """Adds entry to DynamoDB table"""
 
     dynamo_table = dynamo_db.Table(table)
@@ -55,13 +57,15 @@ def add_single_item(table="ebay_watches", title=None, price="",date="", time_sta
             "price": str(price),
             "date_added": time_stamp,
             "brand": brand,
-            "reference": reference
+            "reference": reference,
+            "metal": metal
             # "date": date
         }
 
     )
 
 # add_single_item("Cartier Tank", 2000)
+
 
 def get_single_item(title, table="ebay_watches"):
     """Retrieves entry from DynamoDB table"""
@@ -77,8 +81,6 @@ def get_single_item(title, table="ebay_watches"):
 
 # result = get_single_item("Cartier Tank").get("title")
 # print(result)
-
-# add_single_item(title="Omega Speedmaster", price="$3,405.00", table="NewTable")
 
 
 def get_item_by_attr(_attr="Omega Speedmaster", table="ebay_watches"):
@@ -97,6 +99,7 @@ def get_item_by_attr(_attr="Omega Speedmaster", table="ebay_watches"):
 
 # if (get_item_by_attr(_attr="Estate 3.00ct Diamond 14k Yellow Gold Omega Style Necklace")) == []:
 #     print("not found!")
+
 
 def get_all_items(table="ebay_watches"):
     """Retrieves all entries from DynamoDB using scan"""

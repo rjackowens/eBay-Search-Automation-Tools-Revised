@@ -6,10 +6,11 @@ import time
 
 from selenium_runner import run_selenium
 from string_templates import stop_words
-from dynamodb import add_single_item, get_item_by_attr
+from aws_resources.dynamodb import add_single_item, get_item_by_attr
+from aws_resources.sns import send_text_message
+
 from timestamp import generate_timestamp
-from sns import send_text_message
-from spacy_rule_based_matching import run_matcher_multiple
+from spacy_resources.spacy_rule_based_matching import run_matcher_multiple
 
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.keys import Keys
@@ -112,5 +113,5 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
 
     b.quit()
 
-# run_search("zenith")
-run_search("Breguet", min_price=4000, max_price=7650)
+run_search("zenith")
+# run_search("Breguet", min_price=4000, max_price=7650)
