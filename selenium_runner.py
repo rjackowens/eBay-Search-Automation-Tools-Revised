@@ -17,7 +17,7 @@ def verify_file_exists(file_path):
 def run_selenium(headless_mode=False) -> webdriver:
     """Runs OS specific Selenium with options"""
 
-    if operating_system is "Windows":
+    if operating_system == "Windows":
         from selenium.webdriver.chrome.options import Options
         selenium_path = os.path.expandvars("%USERPROFILE%\Downloads\chromedriver.exe")
         verify_file_exists(selenium_path)
@@ -26,7 +26,7 @@ def run_selenium(headless_mode=False) -> webdriver:
         options.headless = headless_mode
         b = webdriver.Chrome(options=options, executable_path=selenium_path)
 
-    elif operating_system is "Darwin": # Mac
+    elif operating_system == "Darwin": # Mac
         from selenium.webdriver.firefox.options import Options
         selenium_path = "/Users/jackowens/Downloads/geckodriver"
         verify_file_exists(selenium_path)
@@ -35,7 +35,7 @@ def run_selenium(headless_mode=False) -> webdriver:
         options.headless = headless_mode
         b = webdriver.Chrome(options=options, executable_path=selenium_path)
 
-    elif operating_system is "Linux":
+    elif operating_system == "Linux":
         from selenium.webdriver.firefox.options import Options
         selenium_path = "/Users/jackowens/Downloads/geckodriver"
         verify_file_exists(selenium_path)

@@ -17,7 +17,7 @@ from selenium.webdriver.common.keys import Keys
 
 
 def run_search (search_term: str, search_filter=stop_words.get("general"),
-    min_price=600, max_price=7200, export_csv=False, headless=False):
+    min_price=600, max_price=7200, export_csv=False, headless=True):
     """Run eBay search query with search filters and price constraints.
 
     Args:
@@ -93,7 +93,7 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
                 # If item has been seen, skips over it
                 if (get_item_by_attr(_attr=_item)) == []: # if not found in DynamoDB
                     print(f"{_item} for {price.text} is new, adding to DynamoDB")
-                    run_matcher_multiple(_item)
+                    # run_matcher_multiple(_item)
 
                     add_single_item(title=str(_item), price=str(price.text), time_stamp=time_stamp, brand=search_term) # adds item to DynamoDB
                     item_titles.append(_item) # Necessary to report num of new items
