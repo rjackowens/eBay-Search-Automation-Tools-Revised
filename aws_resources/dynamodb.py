@@ -45,7 +45,9 @@ def create_table(table_name=None):
         return table
 
 
-def add_single_item(table="ebay_watches", title=None, price="",date="", time_stamp="", brand="", reference="", metal=""):
+def add_single_item(table="ebay_watches", title=None,
+                    price="", time_stamp="",
+                    brand="", reference="", metal=""):
     """Adds entry to DynamoDB table"""
 
     dynamo_table = dynamo_db.Table(table)
@@ -64,7 +66,7 @@ def add_single_item(table="ebay_watches", title=None, price="",date="", time_sta
 
     )
 
-# add_single_item("Cartier Tank", 2000)
+# add_single_item("ebay_watches", title="Test", price="50", time_stamp="6-26-2021", brand="Test", reference="Test", metal="Gold")
 
 
 def get_single_item(title, table="ebay_watches"):

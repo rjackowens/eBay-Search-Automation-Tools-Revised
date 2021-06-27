@@ -1,11 +1,8 @@
+import os
 import platform
 from pathlib import Path
-import os
-
 from selenium import webdriver
 
-
-operating_system = platform.system()
 
 def verify_file_exists(file_path):
     if Path(file_path).is_file():
@@ -16,6 +13,8 @@ def verify_file_exists(file_path):
 
 def run_selenium(headless_mode=False) -> webdriver:
     """Runs OS specific Selenium with options"""
+
+    operating_system = platform.system()
 
     if operating_system == "Windows":
         from selenium.webdriver.chrome.options import Options

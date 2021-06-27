@@ -17,7 +17,7 @@ from selenium.webdriver.common.keys import Keys
 
 
 def run_search (search_term: str, search_filter=stop_words.get("general"),
-    min_price=600, max_price=7200, export_csv=False, headless=True):
+                min_price=600, max_price=7200, export_csv=False, headless=True):
     """Run eBay search query with search filters and price constraints.
 
     Args:
@@ -52,18 +52,13 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
     time.sleep(2)  # Wait for results to load
 
     # Select Buy It Now
-    buy_it_now = b.find_element_by_xpath("//h2[contains(., 'Buy It Now')]")
-    buy_it_now.click()
+    b.find_element_by_xpath("/html/body/div[4]/div[5]/div[1]/div/div[1]/div[2]/div[1]/div/ul/li[4]/a/span").click()
 
     # Sort by Newly Listed
-    page_url = b.current_url
-    page_url = page_url + "&_sop=10"
-    b.get(page_url)
+    b.get(b.current_url + "&_sop=10")
 
     # Set Price Constraints
-    page_url = b.current_url
-    page_url = page_url + f"&_udhi={max_price}&rt=nc&_udlo={min_price}"
-    b.get(page_url)
+    b.get(b.current_url + f"&_udhi={max_price}&rt=nc&_udlo={min_price}")
 
     # Save Page Source
     page_source_results = b.page_source
@@ -72,9 +67,7 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
     # Parse Item Titles
     listings = soup.find_all("li", class_="s-item") # <class 'bs4.element.ResultSet'>
 
-    item_titles = []
-    item_prices = []
-    item_dates = []
+    item_titles, item_prices, item_dates = [], [], []
 
     # Loops through all listings and adds data to item_titles, item_prices, and item_dates
     # if _item does not already exist in relevant DynamoDB table
@@ -86,7 +79,7 @@ def run_search (search_term: str, search_filter=stop_words.get("general"),
             item_prices.append(price.text)
 
         for name in listing.find_all('h3', attrs={'class':"s-item__title"}):
-            if(str(name.find(text=True, recursive=False))!="None"):
+            if(str(name.find(text=True, recursive=False)) != "None"):
                 _item = str(name.find(text=True, recursive=False))
 
                 # If item is new, adds to DynamoDB and appends to item_titles
